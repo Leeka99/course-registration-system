@@ -2,6 +2,7 @@ package com.techcourse.api.service;
 
 import com.techcourse.api.domain.Course;
 import com.techcourse.api.domain.Registration;
+import com.techcourse.api.domain.ShowRegistrationResponse;
 import com.techcourse.api.domain.Student;
 import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
@@ -35,5 +36,30 @@ public class ApplyService {
         // 가득 찼다면 대기순번으로
         registrationRepository.save(Registration.changeToWait(student, course));
     }
+
+    public List<ShowRegistrationResponse> showRegistration() {
+        List<Registration> registrations = registrationRepository.findAll();
+
+        List<ShowRegistrationResponse> responses = new ArrayList<>();
+
+        for (Registration registration : registrations) {
+            Student student = studentRepository.findById(registration.getStudent().getId())
+                .orElseThrow();
+            Course course = courseRepository.findById(registration.getCourse().getId())
+                .orElseThrow();
+
+            ShowRegistrationResponse dto = new ShowRegistrationResponse(
+                course.getTitle(),
+                registration.getStatus(),
+                student.getName(),
+                student.getGrade(),
+                registration.getTime()
+            );
+            responses.add(dto);
+        }
+
+        return responses;
+    }
+
 }
 
