@@ -1,4 +1,4 @@
-package com.techcourse.api.domain;
+package com.techcourse.api.util;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
