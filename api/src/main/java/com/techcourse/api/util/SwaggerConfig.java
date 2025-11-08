@@ -21,7 +21,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
             .info(new Info()
                 .title("선착순 이벤트 시스템 제작 - 수강신청 시스템")
                 .description("""
-                            강의 수강신청 시스템의 REST API 문서입니다. 동시성 문제 학습을 위한 서비스입니다.<br>
+                            수강신청 시스템의 REST API 문서입니다. 동시성 문제 학습을 위한 서비스입니다.<br>
                             원활한 서비스를 위해 데이터베이스 연결이 필요합니다. (https://www.erdcloud.com/d/sCEJbNPZh8EZSNp7P)
                             """)
                 .version("v1.0.0"));
