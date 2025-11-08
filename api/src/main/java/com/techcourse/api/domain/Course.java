@@ -4,8 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Course {
 
     @Id
@@ -34,9 +36,5 @@ public class Course {
 
     public void increaseCapacity() {
         this.currentCapacity++;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

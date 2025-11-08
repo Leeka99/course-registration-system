@@ -8,8 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Registration {
 
     @Id
@@ -27,8 +29,6 @@ public class Registration {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    private Long userId;
-
     public Registration() {
     }
 
@@ -45,9 +45,5 @@ public class Registration {
 
     public static Registration changeToWait(Student student, Course course) {
         return new Registration(student, course, Status.WAIT);
-    }
-
-    public Status getStatus() {
-        return status;
     }
 }
