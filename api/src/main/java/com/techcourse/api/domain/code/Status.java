@@ -1,4 +1,4 @@
-package com.techcourse.api.domain;
+package com.techcourse.api.domain.code;
 
 public enum Status {
     COMPLETE, WAIT
