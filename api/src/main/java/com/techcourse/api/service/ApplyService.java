@@ -7,6 +7,8 @@ import com.techcourse.api.domain.Student;
 import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,11 +32,14 @@ public class ApplyService {
         // 수강 가능 인원이 남아있다면
         if (course.isAvailable()) {
             course.increaseCapacity();
+            courseRepository.save(course);
             registrationRepository.save(Registration.changeToComplete(student, course));
+            return;
         }
-
-        // 가득 찼다면 대기순번으로
-        registrationRepository.save(Registration.changeToWait(student, course));
+        if (!course.isAvailable()) {
+            // 가득 찼다면 대기순번으로
+            registrationRepository.save(Registration.changeToWait(student, course));
+        }
     }
 
     public List<ShowRegistrationResponse> showRegistration() {
