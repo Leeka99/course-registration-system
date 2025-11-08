@@ -1,5 +1,6 @@
-package com.techcourse.api.domain;
+package com.techcourse.api.domain.entity;
 
+import com.techcourse.api.domain.code.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

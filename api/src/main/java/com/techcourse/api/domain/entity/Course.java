@@ -1,4 +1,4 @@
-package com.techcourse.api.domain;
+package com.techcourse.api.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
