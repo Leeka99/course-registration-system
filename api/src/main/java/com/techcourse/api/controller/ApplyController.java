@@ -1,8 +1,9 @@
 package com.techcourse.api.controller;
 
-import com.techcourse.api.domain.ApiResponse;
-import com.techcourse.api.domain.ShowRegistrationResponse;
+import com.techcourse.api.util.ApiResponse;
+import com.techcourse.api.domain.dto.ShowRegistrationResponse;
 import com.techcourse.api.service.ApplyService;
+import com.techcourse.api.service.original.ShowRegistrationService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApplyController {
 
     private final ApplyService applyService;
+    private final ShowRegistrationService showRegistrationService;
 
     @Operation(summary = "등록 목록 전체조회", description = "전체 등록 상황을 조회합니다.")
     @GetMapping("/show")
     public ResponseEntity<ApiResponse<List<ShowRegistrationResponse>>> showRegistration() {
-        List<ShowRegistrationResponse> response = applyService.showRegistration();
+        List<ShowRegistrationResponse> response = showRegistrationService.showRegistration();
         return ResponseEntity.ok(ApiResponse.show(response));
     }
 
