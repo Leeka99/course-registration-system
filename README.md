@@ -54,27 +54,27 @@
 >>   - [x] Thread 클래스
 >>   - [x] Runnable 인터페이스
 >> - [ ] 스레드 풀
->>   - [x] callable
->>   - [x] Future
->>   - [ ] ExecutorService
->>   - [ ] ThreadPoolExecutor 동작 방식
+>>   - [x] Callable 인터페이스
+>>   - [x] Future 인터페이스
+>>   - [x] ExecutorService 인터페이스
+>>   - [x] ThreadPoolExecutor 동작 방식
 >> - [ ] 스레드 안전성
->>   - [ ] 공유 자원 개념
->>   - [ ] 스레드 간 데이터 충돌 이해
+>>   - [x] 공유 자원 개념
+>>   - [x] 스레드 간 데이터 충돌 이해
 >
 > #### 3. 동시성 문제 재현
 > 목표 : Race Condition 발생 상황을 직접 만들어보고 확인한다.
 >> - [x] 순차적으로 진행 테스트
->> - [ ] 여러 스레드가 동시에 같은 강좌 신청 (ExecutorService 사용)
->> - [ ] Race Condition 확인
+>> - [x] 여러 스레드가 동시에 같은 강좌 신청 (ExecutorService 사용)
+>> - [x] Race Condition 확인
 >
 > #### 4. 동시성 제어 실습
 > 목표 : 코드 수준과 DB 수준 락을 적용하며 효과를 비교한다.
 >> - [ ] 자바 레벨 락
->>   - [ ] synchronized 키워드
+>>   - [x] synchronized 키워드
 >>   - [ ] ReentrantLock 적용
 >>   - [ ] 락을 걸지 않았을 때와 비교
->> - [ ] JPA 레벨 락
+>> - [ ] DB 레벨 락
 >>   - [ ] 비관적 락(Pessimistic Lock)
 >>   - [ ] 낙관적 락(Optimistic Lock)
 >> - [ ] 결과 비교
