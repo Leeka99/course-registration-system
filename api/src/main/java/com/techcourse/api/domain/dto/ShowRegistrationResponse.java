@@ -1,5 +1,6 @@
-package com.techcourse.api.domain;
+package com.techcourse.api.domain.dto;
 
+import com.techcourse.api.domain.code.Status;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
