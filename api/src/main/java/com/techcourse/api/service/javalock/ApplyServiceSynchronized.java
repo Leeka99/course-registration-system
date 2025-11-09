@@ -8,18 +8,17 @@ import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
 import com.techcourse.api.service.ApplyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Primary
 public class ApplyServiceSynchronized implements ApplyService {
 
     private final RegistrationRepository registrationRepository;
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
 
+    @Override
     public synchronized void apply(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId).orElseThrow();
         Course course = courseRepository.findById(courseId).orElseThrow();
