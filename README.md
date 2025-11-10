@@ -71,33 +71,33 @@
 > #### 4. DB 락 및 트랜잭션 학습
 > 목표 : DB 락 구조와 트랜잭션 전략을 이해한다.
 >> - [ ] 트랜잭션
->>   - [ ] 개념
->>   - [ ] ACID
+>>   - [x] 개념
+>>   - [x] ACID
 >> - [ ] MySQL 엔진 종류
->>   - [ ] MyISAM
->>   - [ ] InnoDB
+>>   - [x] MyISAM
+>>   - [x] InnoDB
 >> - [ ] DB 락 구조 (DB 내부 메커니즘)
 >>   - [ ] MySQL 엔진레벨 Lock
->>     - [ ] Global Lock
->>     - [ ] Backup Lock
+>>     - [x] Global Lock
+>>     - [x] Backup Lock
 >>     - [ ] Table Lock
 >>   - [ ] Storage 엔진레벨 Lock
->>     - [ ] Record Lock
+>>     - [x] Record Lock
 >>     - [ ] Gap Lock
 >>     - [ ] Next-Key Lock
 >> - [ ] DB 락 전략
->>   - [ ] 비관적 락(Pessimistic Lock)
->>   - [ ] 낙관적 락(Optimistic Lock)
+>>   - [x] 비관적 락(Pessimistic Lock)
+>>   - [x] 낙관적 락(Optimistic Lock)
 >
 > #### 5. 동시성 제어 실습
 > 목표 : 코드 수준과 DB 수준 락을 적용하며 효과를 비교한다.
 >> - [ ] 자바 레벨 락
 >>   - [x] synchronized 키워드
->>   - [ ] ReentrantLock 적용
->>     - [ ] Condition 활용
+>>   - [x] ReentrantLock 적용
+>>     - [x] Condition 활용
 >> - [ ] DB 레벨 락
->>   - [ ] 비관적 락(Pessimistic Lock)
->>   - [ ] 낙관적 락(Optimistic Lock)
+>>   - [x] 비관적 락(Pessimistic Lock)
+>>   - [x] 낙관적 락(Optimistic Lock)
 >> - [ ] 결과 비교
 >>   - [ ] 성공률
 >>   - [ ] 속도
