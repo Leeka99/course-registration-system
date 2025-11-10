@@ -7,6 +7,7 @@ import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
 import com.techcourse.api.service.ApplyService;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
@@ -25,44 +26,45 @@ public class ApplyServiceReentrantLock implements ApplyService {
 
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition otherGradeQueue = lock.newCondition();
-    private boolean firstYearProcessing = false;
+    private final AtomicInteger firstYearRunning = new AtomicInteger(0);
 
     @Override
     @Transactional
     public void apply(Long studentId, Long courseId) {
+        Student student = studentRepository.findById(studentId).orElseThrow();
         lock.lock();
         try {
-            Student student = studentRepository.findById(studentId).orElseThrow();
-            Course course = courseRepository.findById(courseId).orElseThrow();
-
             if (student.getGrade() == 1) {
-                firstYearProcessing = true;
+                firstYearRunning.incrementAndGet();
             }
-
-            // 1학년 우선 정책 적용: 조건 만족할 때까지 대기
-            while (student.getGrade() != 1 && firstYearProcessing) {
-                try {
-                    otherGradeQueue.await();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
+            if (student.getGrade() != 1) {
+                while (firstYearRunning.get() > 0) {
+                    try {
+                        otherGradeQueue.await();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
                 }
             }
+
+            Course course = courseRepository.findById(courseId).orElseThrow();
 
             if (course.isAvailable()) {
                 course.increaseCapacity();
                 courseRepository.save(course);
                 registrationRepository.save(Registration.changeToComplete(student, course));
-                return;
-            }
-
-            if (!course.isAvailable()) {
+            } else {
                 registrationRepository.save(Registration.changeToWait(student, course));
             }
 
+            if (student.getGrade() == 1) {
+                firstYearRunning.decrementAndGet();
+                if (firstYearRunning.get() == 0) {
+                    otherGradeQueue.signalAll();
+                }
+            }
         } finally {
-            firstYearProcessing = false;
-            otherGradeQueue.signalAll();
             lock.unlock();
         }
     }
