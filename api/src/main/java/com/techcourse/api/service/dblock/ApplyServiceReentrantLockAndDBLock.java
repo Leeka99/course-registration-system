@@ -27,7 +27,6 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
     private final CourseRepository courseRepository;
 
     private final ReentrantLock lock = new ReentrantLock();
-    private final Condition firstGradeCondition = lock.newCondition();
     private final Condition otherGradeCondition = lock.newCondition();
     private final AtomicInteger firstYearRunning = new AtomicInteger(0);
 
@@ -43,14 +42,12 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
             if (student.getGrade() == 1) {
                 firstYearRunning.incrementAndGet();
             }
-            if (student.getGrade() != 1) {
-                while (firstYearRunning.get() > 0) {
-                    try {
-                        otherGradeCondition.await();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
+            while (student.getGrade() != 1 && firstYearRunning.get() > 0) {
+                try {
+                    otherGradeCondition.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
                 }
             }
 
