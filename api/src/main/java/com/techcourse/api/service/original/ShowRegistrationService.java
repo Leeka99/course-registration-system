@@ -32,6 +32,7 @@ public class ShowRegistrationService {
                 .orElseThrow();
 
             ShowRegistrationResponse dto = new ShowRegistrationResponse(
+                registration.getId(),
                 course.getTitle(),
                 registration.getStatus(),
                 student.getName(),

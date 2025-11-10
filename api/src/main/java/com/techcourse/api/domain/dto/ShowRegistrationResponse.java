@@ -9,6 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ShowRegistrationResponse {
 
+    private Long registrationId;
     private String courseName;
     private Status status;
     private String studentName;
