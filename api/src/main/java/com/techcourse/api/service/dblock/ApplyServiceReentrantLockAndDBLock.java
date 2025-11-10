@@ -27,8 +27,8 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
     private final CourseRepository courseRepository;
 
     private final ReentrantLock lock = new ReentrantLock();
-    private final Condition firstGradeQueue = lock.newCondition();
-    private final Condition otherGradeQueue = lock.newCondition();
+    private final Condition firstGradeCondition = lock.newCondition();
+    private final Condition otherGradeCondition = lock.newCondition();
     private final AtomicInteger firstYearRunning = new AtomicInteger(0);
 
     @Override
@@ -36,32 +36,23 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
     public void apply(Long studentId, Long courseId) {
 
         Student student = studentRepository.findById(studentId).orElseThrow();
+        Course course = courseRepository.findByIdWithPessimisticLock(courseId).orElseThrow();
 
         lock.lock();
         try {
             if (student.getGrade() == 1) {
-                try {
-                    firstGradeQueue.await();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
                 firstYearRunning.incrementAndGet();
             }
             if (student.getGrade() != 1) {
-                try {
-                    otherGradeQueue.await();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
+                while (firstYearRunning.get() > 0) {
+                    try {
+                        otherGradeCondition.await();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
                 }
             }
-
-            while (firstYearRunning.get() == 0) {
-                otherGradeQueue.signal();
-            }
-
-            Course course = courseRepository.findByIdWithPessimisticLock(courseId).orElseThrow();
 
             if (course.isAvailable()) {
                 course.increaseCapacity();
@@ -75,7 +66,7 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
 
             if (student.getGrade() == 1) {
                 firstYearRunning.decrementAndGet();
-                otherGradeQueue.signalAll();
+                otherGradeCondition.signalAll();
             }
         } finally {
             lock.unlock();
