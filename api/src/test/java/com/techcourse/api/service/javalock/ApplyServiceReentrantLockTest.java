@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,9 @@ class ApplyServiceReentrantLockTest {
         courseRepository.save(new Course("대학생활 시작하기", 100));
     }
 
+    @DisplayName("동시에 신청하는 경우를 테스트한다 - ReentrantLock")
     @Test
-    void testFirstYearPriority() throws InterruptedException {
+    void 동시에_신청하는_경우_ReentrantLock적용() throws InterruptedException {
         List<Student> students = studentRepository.findAll();
         Course course = courseRepository.findAll().get(0);
         int threadCount = students.size();
