@@ -39,12 +39,9 @@ class ApplyServiceReentrantLockAndDBLockTest {
 
     @BeforeEach
     void init() {
-        for (int i = 1; i <= 80; i++) {
+        for (int i = 1; i <= 159; i += 2) {
             studentRepository.save(new Student("학생" + i, 3));
-        }
-
-        for (int i = 71; i <= 150; i++) {
-            studentRepository.save(new Student("학생" + i, 1));
+            studentRepository.save(new Student("학생" + i + 1, 1));
         }
         courseRepository.save(new Course("대학생활 시작하기", 100));
     }
@@ -67,10 +64,9 @@ class ApplyServiceReentrantLockAndDBLockTest {
             final int idx = index;
             executorService.submit(() -> {
                 try {
-                    // 모든 스레드가 여기서 대기한다.
+                    // 모든 스레드가 여기서 대기
                     startLatch.await();
-
-                    // 동시에 시작한다.
+                    
                     applyServiceReentrantLockAndDBLock.apply(firstGradeStudents.get(idx).getId(),
                         course.getId());
                     applyServiceReentrantLockAndDBLock.apply(otherGradeStudents.get(idx).getId(),
