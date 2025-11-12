@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Primary
-public class ApplyServiceRedisson implements ApplyService {
+public class ApplyServiceRedissonLock implements ApplyService {
 
     private final RedissonClient redissonClient;
     private final RegistrationRepository registrationRepository;
@@ -27,54 +27,53 @@ public class ApplyServiceRedisson implements ApplyService {
     private final CourseRepository courseRepository;
 
     @Override
-    @Transactional
     public void apply(Long studentId, Long courseId) {
 
         Student student = studentRepository.findById(studentId).orElseThrow();
-        Course course = courseRepository.findById(courseId).orElseThrow();
 
-        RLock lock = redissonClient.getLock("applyLock:" + courseId);
-        boolean isLocked = false;
+        // Redis에 임시 대기열 등록
+        RQueue<Long> firstQueue = redissonClient.getQueue("firstGrade:" + courseId);
+        RQueue<Long> otherQueue = redissonClient.getQueue("otherGrade:" + courseId);
 
-        try {
-            isLocked = lock.tryLock(5, 10, TimeUnit.SECONDS);
-            if (!isLocked) {
-                return;
-            }
+        if (student.getGrade() == 1) {
+            firstQueue.add(studentId);
+        } else {
+            otherQueue.add(studentId);
+        }
 
-            // Redis에 임시 대기열 등록
-            RQueue<Long> firstQueue = redissonClient.getQueue("firstGrade:" + courseId);
-            RQueue<Long> otherQueue = redissonClient.getQueue("otherGrade:" + courseId);
+        processQueue(firstQueue, courseId);
 
-            if (student.getGrade() == 1) {
-                firstQueue.add(studentId);
-            } else {
-                otherQueue.add(studentId);
-            }
+        processQueue(otherQueue, courseId);
+    }
 
-            // 1학년 우선 처리
-            while (!firstQueue.isEmpty()) {
-                Long firstId = firstQueue.poll();
-                processRegistration(firstId, course);
-            }
-
-            // 1학년이 모두 끝난 후, 나머지 학년 처리
-            while (!otherQueue.isEmpty()) {
-                Long otherId = otherQueue.poll();
-                processRegistration(otherId, course);
-            }
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            if (isLocked && lock.isHeldByCurrentThread()) {
-                lock.unlock();
+    private void processQueue(RQueue<Long> queue, Long courseId) {
+        Long studentId;
+        while ((studentId = queue.poll()) != null) {
+            RLock lock = redissonClient.getLock("applyLock:" + courseId);
+            boolean isLocked = false;
+            try {
+                // 최대 5초 대기, 락 잡으면 10초 유지
+                isLocked = lock.tryLock(5, 10, TimeUnit.SECONDS);
+                if (!isLocked) {
+                    // 락 못 잡으면 큐 맨 뒤로 다시 넣기
+                    queue.add(studentId);
+                    continue;
+                }
+                processRegistration(studentId, courseId);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                if (isLocked && lock.isHeldByCurrentThread()) {
+                    lock.unlock();
+                }
             }
         }
     }
 
-    private void processRegistration(Long studentId, Course course) {
+    @Transactional
+    public void processRegistration(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId).orElseThrow();
+        Course course = courseRepository.findById(courseId).orElseThrow();
 
         if (course.isAvailable()) {
             course.increaseCapacity();
