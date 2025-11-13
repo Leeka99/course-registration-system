@@ -17,7 +17,7 @@ public class RegistrationService {
 
     @Transactional
     public void courseRegistration(Student student, Long courseId) {
-        Course course = courseRepository.findByIdWithPessimisticLock(courseId).orElseThrow();
+        Course course = courseRepository.findById(courseId).orElseThrow();
 
         if (course.isAvailable()) {
             course.increaseCapacity();
