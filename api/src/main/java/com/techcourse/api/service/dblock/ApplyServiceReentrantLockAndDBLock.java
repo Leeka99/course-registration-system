@@ -29,11 +29,8 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
     private final AtomicInteger firstYearRunning = new AtomicInteger(0);
 
     @Override
-    @Transactional
     public void apply(Long studentId, Long courseId) {
-
         Student student = studentRepository.findById(studentId).orElseThrow();
-        Course course = courseRepository.findByIdWithPessimisticLock(courseId).orElseThrow();
 
         lock.lock();
         try {
@@ -49,15 +46,7 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
                 }
             }
 
-            if (course.isAvailable()) {
-                course.increaseCapacity();
-                courseRepository.save(course);
-
-                registrationRepository.save(Registration.changeToComplete(student, course));
-
-            } else {
-                registrationRepository.save(Registration.changeToWait(student, course));
-            }
+            courseRegistration(student, courseId);
 
             if (student.getGrade() == 1) {
                 firstYearRunning.decrementAndGet();
@@ -65,6 +54,21 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
             }
         } finally {
             lock.unlock();
+        }
+    }
+
+    @Transactional
+    public void courseRegistration(Student student, Long courseId) {
+        Course course = courseRepository.findByIdWithPessimisticLock(courseId).orElseThrow();
+
+        if (course.isAvailable()) {
+            course.increaseCapacity();
+            courseRepository.save(course);
+
+            registrationRepository.save(Registration.changeToComplete(student, course));
+
+        } else {
+            registrationRepository.save(Registration.changeToWait(student, course));
         }
     }
 }
