@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
+public class ApplyServiceReentrantLock implements ApplyService {
 
     private final StudentRepository studentRepository;
     private final RegistrationService registrationService;
