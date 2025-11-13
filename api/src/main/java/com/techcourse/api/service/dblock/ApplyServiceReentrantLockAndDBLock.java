@@ -1,28 +1,23 @@
 package com.techcourse.api.service.dblock;
 
-import com.techcourse.api.domain.entity.Course;
-import com.techcourse.api.domain.entity.Registration;
 import com.techcourse.api.domain.entity.Student;
-import com.techcourse.api.repository.CourseRepository;
-import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
 import com.techcourse.api.service.ApplyService;
+import com.techcourse.api.service.RegistrationService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
 
-    private final RegistrationRepository registrationRepository;
     private final StudentRepository studentRepository;
-    private final CourseRepository courseRepository;
+    private final RegistrationService registrationService;
 
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition otherGradeCondition = lock.newCondition();
@@ -46,7 +41,7 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
                 }
             }
 
-            courseRegistration(student, courseId);
+            registrationService.courseRegistration(student, courseId);
 
             if (student.getGrade() == 1) {
                 firstYearRunning.decrementAndGet();
@@ -54,21 +49,6 @@ public class ApplyServiceReentrantLockAndDBLock implements ApplyService {
             }
         } finally {
             lock.unlock();
-        }
-    }
-
-    @Transactional
-    public void courseRegistration(Student student, Long courseId) {
-        Course course = courseRepository.findByIdWithPessimisticLock(courseId).orElseThrow();
-
-        if (course.isAvailable()) {
-            course.increaseCapacity();
-            courseRepository.save(course);
-
-            registrationRepository.save(Registration.changeToComplete(student, course));
-
-        } else {
-            registrationRepository.save(Registration.changeToWait(student, course));
         }
     }
 }
