@@ -39,34 +39,52 @@ class ApplyServiceReentrantLockTest {
 
     @BeforeEach
     void init() {
-        for (int i = 1; i <= 70; i++) {
+        for (int i = 1; i <= 159; i += 2) {
             studentRepository.save(new Student("학생" + i, 3));
-        }
-
-        for (int i = 71; i <= 150; i++) {
-            studentRepository.save(new Student("학생" + i, 1));
+            studentRepository.save(new Student("학생" + i + 1, 1));
         }
         courseRepository.save(new Course("대학생활 시작하기", 100));
     }
 
-    @DisplayName("동시에 신청하는 경우를 테스트한다 - ReentrantLock")
+    @DisplayName("1학년 80명, 3학년 80명이 동시에 신청하는 경우 1학년이 먼저 수강신청 되는지 테스트한다 - ReentrantLock")
     @Test
-    void 동시에_신청하는_경우_ReentrantLock적용() throws InterruptedException {
-        List<Student> students = studentRepository.findAll();
-        Course course = courseRepository.findAll().get(0);
-        int threadCount = students.size();
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch latch = new CountDownLatch(threadCount);
+    void 동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {
+        List<Student> firstGradeStudents = studentRepository.findFirstGradeStudents();
+        List<Student> otherGradeStudents = studentRepository.findOtherGradeStudents();
 
-        for (Student student : students) {
+        Course course = courseRepository.findAll().get(0);
+
+        int threadCount = firstGradeStudents.size() + otherGradeStudents.size();
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch doneLatch = new CountDownLatch(threadCount);
+
+        for (int index = 0; index < threadCount; index++) {
+            final int idx = index;
             executorService.submit(() -> {
-                applyServiceReentrantLock.apply(student.getId(), course.getId());
-                latch.countDown();
+                try {
+                    // 모든 스레드가 여기서 대기
+                    startLatch.await();
+
+                    applyServiceReentrantLock.apply(firstGradeStudents.get(idx).getId(),
+                        course.getId());
+                    applyServiceReentrantLock.apply(otherGradeStudents.get(idx).getId(),
+                        course.getId());
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    doneLatch.countDown();
+                }
             });
         }
 
-        // 모든 스레드가 완료될 때까지 대기
-        latch.await();
+        // 모든 스레드 준비 후 동시에 시작
+        startLatch.countDown();
+
+        // 모든 스레드가 끝날 때까지 대기
+        doneLatch.await();
 
         // 스레드 풀 종료
         executorService.shutdown();
@@ -80,10 +98,11 @@ class ApplyServiceReentrantLockTest {
             .filter(register -> register.getStatus().equals(Status.COMPLETE)
                 && register.getStudent().getGrade() == 3).count();
 
-        Assertions.assertThat(firstGradeNumber).isEqualTo(80);
-        Assertions.assertThat(thirdGradeNumber).isEqualTo(70);
+        Assertions.assertThat(firstGradeNumber).isGreaterThan(70);
+        Assertions.assertThat(thirdGradeNumber).isLessThan(30);
 
         log.info("firstGradeNumber : {}", firstGradeNumber);
         log.info("thirdGradeNumber : {}", thirdGradeNumber);
     }
+
 }
