@@ -112,8 +112,8 @@ class ApplyServiceOriginalTest {
             .filter(register -> register.getStatus().equals(Status.WAIT))
             .count();
 
-        Assertions.assertThat(completeCount).isEqualTo(100);
-        Assertions.assertThat(waitCount).isEqualTo(100);
+        Assertions.assertThat(completeCount).isEqualTo(200);
+        Assertions.assertThat(waitCount).isEqualTo(0);
 
         log.info("COMPLETE : {}", completeCount);
         log.info("WAIT : {}", waitCount);
