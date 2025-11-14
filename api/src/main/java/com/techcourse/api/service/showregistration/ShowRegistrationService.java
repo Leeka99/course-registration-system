@@ -1,4 +1,4 @@
-package com.techcourse.api.service.original;
+package com.techcourse.api.service.showregistration;
 
 import com.techcourse.api.domain.dto.ShowRegistrationResponse;
 import com.techcourse.api.domain.entity.Course;
