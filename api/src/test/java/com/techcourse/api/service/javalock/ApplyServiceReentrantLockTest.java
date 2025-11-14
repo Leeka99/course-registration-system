@@ -45,16 +45,14 @@ class ApplyServiceReentrantLockTest {
         }
         courseRepository.save(new Course("대학생활 시작하기", 100));
     }
-
     @DisplayName("1학년 80명, 3학년 80명이 동시에 신청하는 경우 1학년이 먼저 수강신청 되는지 테스트한다 - ReentrantLock")
     @Test
     void 동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {
-        List<Student> firstGradeStudents = studentRepository.findFirstGradeStudents();
-        List<Student> otherGradeStudents = studentRepository.findOtherGradeStudents();
+        List<Student> students = studentRepository.findAll();
 
         Course course = courseRepository.findAll().get(0);
 
-        int threadCount = firstGradeStudents.size() + otherGradeStudents.size();
+        int threadCount = students.size();
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
         CountDownLatch startLatch = new CountDownLatch(1);
@@ -66,10 +64,7 @@ class ApplyServiceReentrantLockTest {
                 try {
                     // 모든 스레드가 여기서 대기
                     startLatch.await();
-
-                    applyServiceReentrantLock.apply(firstGradeStudents.get(idx).getId(),
-                        course.getId());
-                    applyServiceReentrantLock.apply(otherGradeStudents.get(idx).getId(),
+                    applyServiceReentrantLock.apply(students.get(idx).getId(),
                         course.getId());
 
                 } catch (InterruptedException e) {
@@ -98,11 +93,82 @@ class ApplyServiceReentrantLockTest {
             .filter(register -> register.getStatus().equals(Status.COMPLETE)
                 && register.getStudent().getGrade() == 3).count();
 
-        Assertions.assertThat(firstGradeNumber).isGreaterThan(70);
-        Assertions.assertThat(thirdGradeNumber).isLessThan(30);
+        Assertions.assertThat(firstGradeNumber).isGreaterThan(thirdGradeNumber);
 
         log.info("firstGradeNumber : {}", firstGradeNumber);
         log.info("thirdGradeNumber : {}", thirdGradeNumber);
     }
 
+    @DisplayName("1학년 80명, 2학년 80명, 3학년 80명, 4학년 80명이 동시에 신청하는 경우 1학년이 먼저 수강신청 되는지 테스트한다 - ReentrantLock + @Transactional만으로 충분한지 테스트")
+    @Test
+    void 모든학년이_동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {
+
+        for (int i = 160; i <= 319; i += 2) {
+            studentRepository.save(new Student("학생" + i, 2));
+            studentRepository.save(new Student("학생" + i + 1, 4));
+        }
+
+        List<Student> students = studentRepository.findAll();
+
+        Course course = courseRepository.findAll().get(0);
+
+        int threadCount = students.size();
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch doneLatch = new CountDownLatch(threadCount);
+
+        for (int index = 0; index < threadCount; index++) {
+            final int idx = index;
+            executorService.submit(() -> {
+                try {
+                    // 모든 스레드가 여기서 대기
+                    startLatch.await();
+
+                    applyServiceReentrantLock.apply(students.get(idx).getId(),
+                        course.getId());
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    doneLatch.countDown();
+                }
+            });
+        }
+
+        // 모든 스레드 준비 후 동시에 시작
+        startLatch.countDown();
+
+        // 모든 스레드가 끝날 때까지 대기
+        doneLatch.await();
+
+        // 스레드 풀 종료
+        executorService.shutdown();
+
+        long firstGradeNumber = registrationRepository.findAll().stream()
+            .filter(register -> register.getStatus().equals(Status.COMPLETE)
+                && register.getStudent().getGrade() == 1).count();
+
+        long secondGradeNumber = registrationRepository.findAll().stream()
+            .filter(register -> register.getStatus().equals(Status.COMPLETE)
+                && register.getStudent().getGrade() == 2).count();
+
+        long thirdGradeNumber = registrationRepository.findAll().stream()
+            .filter(register -> register.getStatus().equals(Status.COMPLETE)
+                && register.getStudent().getGrade() == 3).count();
+
+        long fourthGradeNumber = registrationRepository.findAll().stream()
+            .filter(register -> register.getStatus().equals(Status.COMPLETE)
+                && register.getStudent().getGrade() == 4).count();
+
+        Assertions.assertThat(firstGradeNumber).isGreaterThan(70);
+        Assertions.assertThat(secondGradeNumber).isLessThan(30);
+        Assertions.assertThat(thirdGradeNumber).isLessThan(30);
+        Assertions.assertThat(fourthGradeNumber).isLessThan(30);
+
+        log.info("firstGradeNumber : {}", firstGradeNumber);
+        log.info("secondGradeNumber : {}", secondGradeNumber);
+        log.info("thirdGradeNumber : {}", thirdGradeNumber);
+        log.info("fourthGradeNumber : {}", fourthGradeNumber);
+    }
 }
