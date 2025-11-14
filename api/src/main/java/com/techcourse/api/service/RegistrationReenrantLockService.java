@@ -21,21 +21,17 @@ public class RegistrationReenrantLockService {
     private final RegistrationRepository registrationRepository;
     private final CourseRepository courseRepository;
 
-    private int firstYearCount = 0;
-    private int otherYearCount = 0;
-
-    private int firstYearLimit;
-    private int otherYearLimit;
-
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition firstYearCondition = lock.newCondition();
     private final Condition otherYearCondition = lock.newCondition();
 
+    long nanos = TimeUnit.SECONDS.toNanos(3);
+
+    private int firstYearCount = 0;
+    private int otherYearCount = 0;
+
     @Transactional
-    public void courseRegistration(Student student) {
-        Course course = courseRepository.findAll().get(0);
-        firstYearLimit = (int) (course.getMaxCapacity() * 0.9);
-        otherYearLimit = (int) (course.getMaxCapacity() * 0.1);
+    public void courseRegistration(Student student, Course course, int firstYearLimit, int otherYearLimit) {
         lock.lock();
         try {
             int grade = student.getGrade();
@@ -51,15 +47,13 @@ public class RegistrationReenrantLockService {
     }
 
     private void otherGrade(Student student, Course course, int otherYearLimit) {
-        long nanos = TimeUnit.SECONDS.toNanos(3);
-
         try {
             while (otherYearCount >= otherYearLimit && nanos > 0) {
                 nanos = otherYearCondition.awaitNanos(nanos);
             }
             if (otherYearCount < otherYearLimit) {
-                registration(student, course);
                 otherYearCount++;
+                registration(student, course);
                 otherYearCondition.signalAll();
                 return;
             }
@@ -71,14 +65,13 @@ public class RegistrationReenrantLockService {
     }
 
     private void firstGrade(Student student, Course course, int firstYearLimit) {
-        long nanos = TimeUnit.SECONDS.toNanos(3);
         try {
             while (firstYearCount >= firstYearLimit && nanos > 0) {
                 nanos = firstYearCondition.awaitNanos(nanos);
             }
             if (firstYearCount < firstYearLimit) {
-                registration(student, course);
                 firstYearCount++;
+                registration(student, course);
                 firstYearCondition.signalAll();
                 return;
             }
