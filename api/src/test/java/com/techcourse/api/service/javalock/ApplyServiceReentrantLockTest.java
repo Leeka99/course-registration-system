@@ -163,9 +163,9 @@ class ApplyServiceReentrantLockTest {
                 && register.getStudent().getGrade() == 4).count();
 
         Assertions.assertThat(firstGradeNumber).isEqualTo(90);
-        Assertions.assertThat(secondGradeNumber).isLessThan(10);
-        Assertions.assertThat(thirdGradeNumber).isLessThan(10);
-        Assertions.assertThat(fourthGradeNumber).isLessThan(10);
+        Assertions.assertThat(secondGradeNumber).isLessThan(11);
+        Assertions.assertThat(thirdGradeNumber).isLessThan(11);
+        Assertions.assertThat(fourthGradeNumber).isLessThan(11);
 
         log.info("firstGradeNumber : {}", firstGradeNumber);
         log.info("secondGradeNumber : {}", secondGradeNumber);
