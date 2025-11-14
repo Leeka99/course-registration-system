@@ -1,4 +1,4 @@
-package com.techcourse.api.service.original;
+package com.techcourse.api.service.lock.original;
 
 import com.techcourse.api.domain.entity.Course;
 import com.techcourse.api.domain.entity.Registration;

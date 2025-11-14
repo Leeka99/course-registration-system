@@ -1,4 +1,5 @@
-package com.techcourse.api.service.javalock;
+package com.techcourse.api.service.lock.dblock;
+
 
 import com.techcourse.api.domain.code.Status;
 import com.techcourse.api.domain.entity.Course;
@@ -6,6 +7,7 @@ import com.techcourse.api.domain.entity.Student;
 import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
+import com.techcourse.api.service.lock.dblock.ApplyServicePessimisticLock;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +25,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 @SpringBootTest
 @ExtendWith(OutputCaptureExtension.class)
 @Slf4j
-class ApplyServiceReentrantLockTest {
+class ApplyServicePessimisticLockTest {
 
     @Autowired
     private RegistrationRepository registrationRepository;
@@ -35,7 +37,7 @@ class ApplyServiceReentrantLockTest {
     private CourseRepository courseRepository;
 
     @Autowired
-    private ApplyServiceReentrantLock applyServiceReentrantLock;
+    private ApplyServicePessimisticLock applyServicePessimisticLock;
 
     @BeforeEach
     void init() {
@@ -45,7 +47,8 @@ class ApplyServiceReentrantLockTest {
         }
         courseRepository.save(new Course("대학생활 시작하기", 100));
     }
-    @DisplayName("1학년 100명, 3학년 100명이 동시에 신청하는 경우 1학년 90% 이외학년 10% 비율로 정상적으로 저장되는지 테스트한다. - ReentrantLock")
+
+    @DisplayName("1학년 100명, 3학년 100명이 동시에 신청하는 경우 1학년 90% 이외학년 10% 비율로 정상적으로 저장되는지 테스트한다. - DB 락(비관적 락)")
     @Test
     void 동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {
         List<Student> students = studentRepository.findAll();
@@ -64,7 +67,7 @@ class ApplyServiceReentrantLockTest {
                 try {
                     // 모든 스레드가 여기서 대기
                     startLatch.await();
-                    applyServiceReentrantLock.apply(students.get(idx).getId(),
+                    applyServicePessimisticLock.apply(students.get(idx).getId(),
                         course.getId());
 
                 } catch (InterruptedException e) {
@@ -100,7 +103,7 @@ class ApplyServiceReentrantLockTest {
         log.info("thirdGradeNumber : {}", thirdGradeNumber);
     }
 
-    @DisplayName("모든 학년이 신청하는 경우에도 1학년 90% 이외학년 10% 비율로 정상적으로 저장되는지 테스트한다. - ReentrantLock")
+    @DisplayName("모든 학년이 신청하는 경우에도 1학년 90% 이외학년 10% 비율로 정상적으로 저장되는지 테스트한다. - DB 락(비관적 락)")
     @Test
     void 모든학년이_동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {
 
@@ -126,7 +129,7 @@ class ApplyServiceReentrantLockTest {
                     // 모든 스레드가 여기서 대기
                     startLatch.await();
 
-                    applyServiceReentrantLock.apply(students.get(idx).getId(),
+                    applyServicePessimisticLock.apply(students.get(idx).getId(),
                         course.getId());
 
                 } catch (InterruptedException e) {

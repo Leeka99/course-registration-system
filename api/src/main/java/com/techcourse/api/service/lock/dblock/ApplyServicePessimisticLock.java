@@ -1,4 +1,4 @@
-package com.techcourse.api.service.javalock;
+package com.techcourse.api.service.lock.dblock;
 
 import com.techcourse.api.domain.entity.Course;
 import com.techcourse.api.domain.entity.Student;
@@ -8,13 +8,15 @@ import com.techcourse.api.service.ApplyService;
 import com.techcourse.api.service.registration.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ApplyServiceReentrantLock implements ApplyService {
+@Primary
+public class ApplyServicePessimisticLock implements ApplyService {
 
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
@@ -24,7 +26,7 @@ public class ApplyServiceReentrantLock implements ApplyService {
     @Transactional
     public void apply(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId).orElseThrow();
-        Course course = courseRepository.findById(courseId).orElseThrow();
+        Course course = courseRepository.findByIdWithPessimisticLock(courseId).orElseThrow();
         int firstYearLimit = (int) (course.getMaxCapacity() * 0.9);
         int otherYearLimit = (int) (course.getMaxCapacity() * 0.1);
         registrationService.courseRegistration(student, course, firstYearLimit,

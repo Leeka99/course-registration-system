@@ -1,4 +1,4 @@
-package com.techcourse.api.service.javalock;
+package com.techcourse.api.service.lock.javalock;
 
 import com.techcourse.api.domain.entity.Course;
 import com.techcourse.api.domain.entity.Registration;
