@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 @Primary
-public class ApplyServiceDBLock implements ApplyService {
+public class ApplyServicePessimisticLock implements ApplyService {
 
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;

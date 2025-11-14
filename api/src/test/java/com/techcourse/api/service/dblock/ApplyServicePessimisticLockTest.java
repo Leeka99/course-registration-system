@@ -24,7 +24,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 @SpringBootTest
 @ExtendWith(OutputCaptureExtension.class)
 @Slf4j
-class ApplyServiceDBLockTest {
+class ApplyServicePessimisticLockTest {
 
     @Autowired
     private RegistrationRepository registrationRepository;
@@ -36,7 +36,7 @@ class ApplyServiceDBLockTest {
     private CourseRepository courseRepository;
 
     @Autowired
-    private ApplyServiceDBLock applyServiceDBLock;
+    private ApplyServicePessimisticLock applyServicePessimisticLock;
 
     @BeforeEach
     void init() {
@@ -66,7 +66,7 @@ class ApplyServiceDBLockTest {
                 try {
                     // 모든 스레드가 여기서 대기
                     startLatch.await();
-                    applyServiceDBLock.apply(students.get(idx).getId(),
+                    applyServicePessimisticLock.apply(students.get(idx).getId(),
                         course.getId());
 
                 } catch (InterruptedException e) {
@@ -128,7 +128,7 @@ class ApplyServiceDBLockTest {
                     // 모든 스레드가 여기서 대기
                     startLatch.await();
 
-                    applyServiceDBLock.apply(students.get(idx).getId(),
+                    applyServicePessimisticLock.apply(students.get(idx).getId(),
                         course.getId());
 
                 } catch (InterruptedException e) {
