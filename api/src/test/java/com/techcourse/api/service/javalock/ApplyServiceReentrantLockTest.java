@@ -39,13 +39,13 @@ class ApplyServiceReentrantLockTest {
 
     @BeforeEach
     void init() {
-        for (int i = 1; i <= 159; i += 2) {
+        for (int i = 1; i <= 200; i += 2) {
             studentRepository.save(new Student("학생" + i, 3));
             studentRepository.save(new Student("학생" + i + 1, 1));
         }
         courseRepository.save(new Course("대학생활 시작하기", 100));
     }
-    @DisplayName("1학년 80명, 3학년 80명이 동시에 신청하는 경우 1학년이 먼저 수강신청 되는지 테스트한다 - ReentrantLock")
+    @DisplayName("1학년 100명, 3학년 100명이 동시에 신청하는 경우 1학년 90% 이외학년 10% 비율로 정상적으로 저장되는지 테스트한다. - ReentrantLock")
     @Test
     void 동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {
         List<Student> students = studentRepository.findAll();
@@ -93,17 +93,18 @@ class ApplyServiceReentrantLockTest {
             .filter(register -> register.getStatus().equals(Status.COMPLETE)
                 && register.getStudent().getGrade() == 3).count();
 
-        Assertions.assertThat(firstGradeNumber).isGreaterThan(thirdGradeNumber);
+        Assertions.assertThat(firstGradeNumber).isEqualTo(90);
+        Assertions.assertThat(thirdGradeNumber).isEqualTo(10);
 
         log.info("firstGradeNumber : {}", firstGradeNumber);
         log.info("thirdGradeNumber : {}", thirdGradeNumber);
     }
 
-    @DisplayName("1학년 80명, 2학년 80명, 3학년 80명, 4학년 80명이 동시에 신청하는 경우 1학년이 먼저 수강신청 되는지 테스트한다 - ReentrantLock + @Transactional만으로 충분한지 테스트")
+    @DisplayName("모든 학년이 신청하는 경우에도 1학년 90% 이외학년 10% 비율로 정상적으로 저장되는지 테스트한다. - ReentrantLock")
     @Test
     void 모든학년이_동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {
 
-        for (int i = 160; i <= 319; i += 2) {
+        for (int i = 201; i <= 400; i += 2) {
             studentRepository.save(new Student("학생" + i, 2));
             studentRepository.save(new Student("학생" + i + 1, 4));
         }
@@ -161,10 +162,10 @@ class ApplyServiceReentrantLockTest {
             .filter(register -> register.getStatus().equals(Status.COMPLETE)
                 && register.getStudent().getGrade() == 4).count();
 
-        Assertions.assertThat(firstGradeNumber).isGreaterThan(70);
-        Assertions.assertThat(secondGradeNumber).isLessThan(30);
-        Assertions.assertThat(thirdGradeNumber).isLessThan(30);
-        Assertions.assertThat(fourthGradeNumber).isLessThan(30);
+        Assertions.assertThat(firstGradeNumber).isEqualTo(90);
+        Assertions.assertThat(secondGradeNumber).isLessThan(10);
+        Assertions.assertThat(thirdGradeNumber).isLessThan(10);
+        Assertions.assertThat(fourthGradeNumber).isLessThan(10);
 
         log.info("firstGradeNumber : {}", firstGradeNumber);
         log.info("secondGradeNumber : {}", secondGradeNumber);
