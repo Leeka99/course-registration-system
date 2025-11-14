@@ -11,7 +11,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,8 @@ public class RegistrationService {
     private int firstYearCount = 0;
     private int otherYearCount = 0;
 
-    public void courseRegistration(Student student, Course course, int firstYearLimit, int otherYearLimit) {
+    public void courseRegistration(Student student, Course course, int firstYearLimit,
+        int otherYearLimit) {
         lock.lock();
         try {
             int grade = student.getGrade();
