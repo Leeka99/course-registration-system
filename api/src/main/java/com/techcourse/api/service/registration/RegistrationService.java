@@ -1,4 +1,4 @@
-package com.techcourse.api.service;
+package com.techcourse.api.service.registration;
 
 import com.techcourse.api.domain.entity.Course;
 import com.techcourse.api.domain.entity.Registration;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RegistrationReenrantLockService {
+public class RegistrationService {
 
     private final RegistrationRepository registrationRepository;
     private final CourseRepository courseRepository;
@@ -30,7 +30,6 @@ public class RegistrationReenrantLockService {
     private int firstYearCount = 0;
     private int otherYearCount = 0;
 
-    @Transactional
     public void courseRegistration(Student student, Course course, int firstYearLimit, int otherYearLimit) {
         lock.lock();
         try {
