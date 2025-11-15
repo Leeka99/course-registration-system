@@ -1,4 +1,4 @@
-package com.techcourse.api.service;
+package com.techcourse.api.service.lock;
 
 public interface ApplyService {
 

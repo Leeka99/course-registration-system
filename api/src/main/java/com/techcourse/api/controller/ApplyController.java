@@ -2,7 +2,7 @@ package com.techcourse.api.controller;
 
 import com.techcourse.api.util.ApiResponse;
 import com.techcourse.api.domain.dto.ShowRegistrationResponse;
-import com.techcourse.api.service.ApplyService;
+import com.techcourse.api.service.lock.ApplyService;
 import com.techcourse.api.service.showregistration.ShowRegistrationService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;

@@ -6,7 +6,7 @@ import com.techcourse.api.domain.entity.Student;
 import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
-import com.techcourse.api.service.ApplyService;
+import com.techcourse.api.service.lock.ApplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
