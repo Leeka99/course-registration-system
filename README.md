@@ -107,12 +107,11 @@
 > #### 6. 스트라이핑
 > 목표 : 락을 효율적으로 사용하는 방법 중 하나인 스트라이핑을 학습한다.
 >> - [ ] 스트라이핑 실습환경 제작
->>   - [ ] 단일 수강신청 서비스 -> 다중 수강신청 서비스로 확장
->> - [ ] 샤드 / 샤딩 이해하기
+>>   - [x] 단일 수강신청 서비스 -> 다중 수강신청 서비스로 확장
+>> - [x] 샤드 / 샤딩 이해하기
 >> - [ ] Lock Striping 직접 구현하기
->>   - [ ] Map<Long, ReentrantLock> + computeIfAbsent
+>>   - [x] ConcurrentHashMap<Long, ReentrantLock> + computeIfAbsent
 >> - [ ] 라이브러리 활용하기 (안전하게 구현된 Striping)
->>   - [ ] ConcurrentHashMap
 >>   - [ ] Guava Striped
 >>   - [ ] Redisson
 >
