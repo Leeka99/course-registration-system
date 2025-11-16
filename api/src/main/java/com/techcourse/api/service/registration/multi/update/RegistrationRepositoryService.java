@@ -1,4 +1,4 @@
-package com.techcourse.api.service.registration.multi;
+package com.techcourse.api.service.registration.multi.update;
 
 import com.techcourse.api.domain.entity.Course;
 import com.techcourse.api.domain.entity.Registration;
