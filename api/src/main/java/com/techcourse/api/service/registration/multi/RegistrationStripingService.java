@@ -1,13 +1,9 @@
 package com.techcourse.api.service.registration.multi;
 
 import com.techcourse.api.domain.entity.Course;
-import com.techcourse.api.domain.entity.Registration;
 import com.techcourse.api.domain.entity.Student;
-import com.techcourse.api.repository.CourseRepository;
-import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.service.registration.RegistrationService;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,77 +16,83 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RegistrationStripingService implements RegistrationService {
 
-    private final RegistrationRepository registrationRepository;
-    private final CourseRepository courseRepository;
+    private final RegistrationRepositoryService registrationRepositoryService;
 
-    private final ReentrantLock lock = new ReentrantLock();
-    private final Condition firstYearCondition = lock.newCondition();
-    private final Condition otherYearCondition = lock.newCondition();
+    // 과목별 락, 조건, 카운트를 묶기
+    private static class CourseLockBundle {
 
-    long nanos = TimeUnit.SECONDS.toNanos(3);
+        final ReentrantLock lock = new ReentrantLock();
+        final Condition firstYearCondition = lock.newCondition();
+        final Condition otherYearCondition = lock.newCondition();
+        int firstYearCount = 0;
+        int otherYearCount = 0;
+    }
 
-    Map<Long, Integer> firstYearCount = new HashMap<>();
-    Map<Long, Integer> otherYearCount = new HashMap<>();
+    private final ConcurrentHashMap<Long, CourseLockBundle> bundles = new ConcurrentHashMap<>();
 
     @Override
     public void courseRegistration(Student student, Course course, int firstYearLimit,
         int otherYearLimit) {
+
+        CourseLockBundle bundle = bundles.computeIfAbsent(course.getId(),
+            id -> new CourseLockBundle());
+        ReentrantLock lock = bundle.lock;
         lock.lock();
+
         try {
             int grade = student.getGrade();
             if (grade == 1) {
-                firstGrade(student, course, firstYearLimit);
+                firstGrade(student, course, bundle, firstYearLimit);
             }
             if (grade != 1) {
-                otherGrade(student, course, otherYearLimit);
+                otherGrade(student, course, bundle, otherYearLimit);
             }
         } finally {
             lock.unlock();
         }
     }
 
-    private void otherGrade(Student student, Course course, int otherYearLimit) {
+    private void otherGrade(Student student, Course course, CourseLockBundle bundle,
+        int otherYearLimit) {
+        long nanos = TimeUnit.SECONDS.toNanos(3);
         try {
-            int number = otherYearCount.getOrDefault(course.getId(), 0);
-            while (number >= otherYearLimit && nanos > 0) {
-                nanos = otherYearCondition.awaitNanos(nanos);
+            if (bundle.otherYearCount >= otherYearLimit) {
+                while (nanos > 0) {
+                    nanos = bundle.otherYearCondition.awaitNanos(nanos);
+                }
+                registrationRepositoryService.saveWait(student, course.getId());
             }
-            if (number < otherYearLimit) {
-                otherYearCount.put(course.getId(), number + 1);
-                registration(student, course);
-                otherYearCondition.signalAll();
-                return;
+
+            if (bundle.otherYearCount < otherYearLimit) {
+                bundle.otherYearCount++;
+                registrationRepositoryService.saveComplete(student, course.getId());
+                bundle.otherYearCondition.signalAll();
             }
-            registrationRepository.save(Registration.changeToWait(student, course));
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-    private void firstGrade(Student student, Course course, int firstYearLimit) {
+    private void firstGrade(Student student, Course course,
+        RegistrationStripingService.CourseLockBundle bundle,
+        int firstYearLimit) {
+        long nanos = TimeUnit.SECONDS.toNanos(3);
         try {
-            int number = firstYearCount.getOrDefault(course.getId(), 0);
-            while (number >= firstYearLimit && nanos > 0) {
-                nanos = firstYearCondition.awaitNanos(nanos);
+            if (bundle.firstYearCount >= firstYearLimit) {
+                while (nanos > 0) {
+                    nanos = bundle.firstYearCondition.awaitNanos(nanos);
+                }
+                registrationRepositoryService.saveWait(student, course.getId());
             }
-            if (number < firstYearLimit) {
-                firstYearCount.put(course.getId(), number + 1);
-                registration(student, course);
-                firstYearCondition.signalAll();
-                return;
+            if (bundle.firstYearCount < firstYearLimit) {
+                bundle.firstYearCount++;
+                registrationRepositoryService.saveComplete(student, course.getId());
+                bundle.firstYearCondition.signalAll();
             }
-            registrationRepository.save(Registration.changeToWait(student, course));
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    private void registration(Student student, Course course) {
-        course.increaseCapacity();
-        courseRepository.save(course);
-
-        registrationRepository.save(Registration.changeToComplete(student, course));
     }
 }

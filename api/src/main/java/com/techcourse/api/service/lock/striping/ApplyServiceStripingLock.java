@@ -8,12 +8,13 @@ import com.techcourse.api.service.lock.ApplyService;
 import com.techcourse.api.service.registration.multi.RegistrationStripingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Primary
 public class ApplyServiceStripingLock implements ApplyService {
 
     private final StudentRepository studentRepository;
@@ -21,12 +22,12 @@ public class ApplyServiceStripingLock implements ApplyService {
     private final RegistrationStripingService registrationStripingService;
 
     @Override
-    @Transactional
     public void apply(Long studentId, Long courseId) {
         Student student = studentRepository.findById(studentId).orElseThrow();
-        Course course = courseRepository.findByIdWithOptimisticLock(courseId).orElseThrow();
+        Course course = courseRepository.findById(courseId).orElseThrow();
         int firstYearLimit = (int) (course.getMaxCapacity() * 0.9);
         int otherYearLimit = (int) (course.getMaxCapacity() * 0.1);
-        registrationStripingService.courseRegistration(student, course, firstYearLimit, otherYearLimit);
+        registrationStripingService.courseRegistration(student, course, firstYearLimit,
+            otherYearLimit);
     }
 }
