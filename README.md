@@ -112,8 +112,8 @@
 >> - [ ] Lock Striping 직접 구현하기
 >>   - [x] ConcurrentHashMap<Long, ReentrantLock> + computeIfAbsent
 >> - [ ] 라이브러리 활용하기 (안전하게 구현된 Striping)
->>   - [ ] Guava Striped
->>   - [ ] Redisson
+>>   - [x] Guava Striped
+>>   - [ ] Redisson (multiLock)
 >
 > #### 7. 다중 인스턴스 환경에서 동시성 제어
 > - 목표 : 여러 서버에서 동시에 요청이 들어오는 상황에서 성능을 최적화하는 방법을 학습한다.
