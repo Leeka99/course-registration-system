@@ -8,10 +8,12 @@ import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
 import com.techcourse.api.service.lock.ApplyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Primary
 public class ApplyServiceOriginal implements ApplyService {
 
     private final RegistrationRepository registrationRepository;

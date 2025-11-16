@@ -1,10 +1,11 @@
 package com.techcourse.api.controller;
 
-import com.techcourse.api.util.ApiResponse;
 import com.techcourse.api.domain.dto.ShowRegistrationResponse;
 import com.techcourse.api.service.lock.ApplyService;
 import com.techcourse.api.service.showregistration.ShowRegistrationService;
+import com.techcourse.api.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "0. (기본) 수강신청", description = "기본 컨트롤러")
 public class ApplyController {
 
     private final ApplyService applyService;
@@ -29,8 +30,7 @@ public class ApplyController {
     }
 
     @Operation(summary = "수강신청", description = "수강신청을 진행합니다.")
-    @PostMapping("/apply/{studentId}/{courseId}")
-
+    @PostMapping("/apply/original/{studentId}/{courseId}")
     public ResponseEntity<ApiResponse<Void>> apply(
         @PathVariable Long studentId,
         @PathVariable Long courseId

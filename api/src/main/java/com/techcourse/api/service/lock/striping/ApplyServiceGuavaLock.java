@@ -8,13 +8,11 @@ import com.techcourse.api.service.lock.ApplyService;
 import com.techcourse.api.service.registration.multi.guava.RegistrationGuavaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Primary
 public class ApplyServiceGuavaLock implements ApplyService {
 
     private final StudentRepository studentRepository;
