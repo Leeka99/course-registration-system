@@ -1,8 +1,9 @@
-package com.techcourse.api.service.registration.multi;
+package com.techcourse.api.service.registration.multi.stripinglock;
 
 import com.techcourse.api.domain.entity.Course;
 import com.techcourse.api.domain.entity.Student;
 import com.techcourse.api.service.registration.RegistrationService;
+import com.techcourse.api.service.registration.multi.update.RegistrationRepositoryService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;

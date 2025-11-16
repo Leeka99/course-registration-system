@@ -1,4 +1,4 @@
-package com.techcourse.api.service.registration.multi;
+package com.techcourse.api.service.lock.striping;
 
 import com.techcourse.api.domain.code.Status;
 import com.techcourse.api.domain.entity.Course;
@@ -6,7 +6,6 @@ import com.techcourse.api.domain.entity.Student;
 import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
-import com.techcourse.api.service.lock.striping.ApplyServiceStripingLock;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -25,7 +24,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 @SpringBootTest
 @ExtendWith(OutputCaptureExtension.class)
 @Slf4j
-class RegistrationStripingServiceTest {
+class ApplyServiceStripingLockTest {
 
     @Autowired
     private RegistrationRepository registrationRepository;
