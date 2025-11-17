@@ -26,7 +26,14 @@
 
 ### 🧑‍🔧 기술 스택
 > - Java 21
+> - Spring Boot 3.5
+> - Gradle
 > - MySQL 8.0
+> - JPA / Hibernate
+
+### 🔧 개발/운영 도구
+> - JMeter
+> - Docker
 
 ### 👉 작업 흐름
 > **수강신청 시스템 구현** ➡ **멀티스레드 + 락 적용** ➡ **동시성 검증** ➡ **부하 테스트**
@@ -34,31 +41,31 @@
 ### ✔️ 작업 목록 체크리스트
 > #### 1. 수강신청 시스템 제작<br>
 > 목표 : 동시성 실험 환경을 구축한다.
->> - [ ] 기본 엔티티 설계
+>> - [x] 기본 엔티티 설계
 >>   - [x] Student
 >>   - [x] Course
 >>   - [x] Registration
->> - [ ] Repository 구현
+>> - [x] Repository 구현
 >>   - [x] StudentRepository
 >>   - [x] CourseRepository
 >>   - [x] RegistrationRepository
->> - [ ] Service 로직 구현
+>> - [x] Service 로직 구현
 >>   - [x] 수강신청 기능
 >>   - [x] 대기자 처리
->> - [ ] Controller 구현
+>> - [x] Controller 구현
 >>   - [x] 수강신청 API
 >
 > #### 2. 스레드 학습
 > 목표 : 스레드가 어떻게 만들어지고, 실행되고, 공유 자원을 어떻게 다루는지 학습한다.
->> - [ ] 기본 스레드
+>> - [x] 기본 스레드
 >>   - [x] Thread 클래스
 >>   - [x] Runnable 인터페이스
->> - [ ] 스레드 풀
+>> - [x] 스레드 풀
 >>   - [x] Callable 인터페이스
 >>   - [x] Future 인터페이스
 >>   - [x] ExecutorService 인터페이스
 >>   - [x] ThreadPoolExecutor 동작 방식
->> - [ ] 스레드 안전성
+>> - [x] 스레드 안전성
 >>   - [x] 공유 자원 개념
 >>   - [x] 스레드 간 데이터 충돌 이해
 >
@@ -70,46 +77,41 @@
 >
 > #### 4. DB 락 및 트랜잭션 학습
 > 목표 : DB 락 구조와 트랜잭션 전략을 이해한다.
->> - [ ] 트랜잭션
+>> - [x] 트랜잭션
 >>   - [x] 개념
 >>   - [x] ACID
->> - [ ] MySQL 엔진 종류
+>> - [x] MySQL 엔진 종류
 >>   - [x] MyISAM
 >>   - [x] InnoDB
->> - [ ] DB 락 구조 (DB 내부 메커니즘)
->>   - [ ] MySQL 엔진레벨 Lock
+>> - [x] DB 락 구조 (DB 내부 메커니즘)
+>>   - [x] MySQL 엔진레벨 Lock
 >>     - [x] Global Lock
 >>     - [x] Backup Lock
 >>     - [x] Table Lock
->>   - [ ] Storage 엔진레벨 Lock
+>>   - [x] Storage 엔진레벨 Lock
 >>     - [x] Record Lock
 >>     - [x] Gap Lock
 >>     - [x] Next-Key Lock
->> - [ ] DB 락 전략
+>> - [x] DB 락 전략
 >>   - [x] 비관적 락(Pessimistic Lock)
 >>   - [x] 낙관적 락(Optimistic Lock)
 >
 > #### 5. 동시성 제어 실습
 > 목표 : 코드 수준과 DB 수준 락을 적용하며 효과를 비교 학습한다.<br>
->> - [ ] 자바 레벨 락
+>> - [x] 자바 레벨 락
 >>   - [x] synchronized 키워드
 >>   - [x] ReentrantLock 적용
 >>     - [x] Condition 활용
->> - [ ] DB 레벨 락
+>> - [x] DB 레벨 락
 >>   - [x] 비관적 락(Pessimistic Lock)
 >>   - [x] 낙관적 락(Optimistic Lock)
->> - [ ] 테스트
->>   - [ ] 단일 서버
->>     - [ ] 성공률
->>     - [ ] 속도
->>     - [ ] 예외 발생률
 >
 > #### 6. 스트라이핑
 > 목표 : 락을 효율적으로 사용하는 방법 중 하나인 스트라이핑을 학습한다.
->> - [ ] 스트라이핑 실습환경 제작
+>> - [x] 스트라이핑 실습환경 제작
 >>   - [x] 단일 수강신청 서비스 -> 다중 수강신청 서비스로 확장
 >> - [x] 샤드 / 샤딩 이해하기
->> - [ ] Lock Striping 직접 구현하기
+>> - [x] Lock Striping 직접 구현하기
 >>   - [x] ConcurrentHashMap<Long, ReentrantLock> + computeIfAbsent
 >> - [ ] 라이브러리 활용하기 (안전하게 구현된 Striping)
 >>   - [x] Guava Striped
@@ -120,25 +122,81 @@
 >> - [ ] 분산 락
 >>   - [ ] Redis
 >>   - [ ] Zookeeper
->> - [ ] 테스트
->>   - [ ] 다중 서버
->>     - [ ] 성공률
->>     - [ ] 속도
->>     - [ ] 예외 발생률
 >
-> #### 8. 부하 테스트 및 모니터링
-> 목표 : 동시 요청 상황에서 시스템의 성능과 안정성을 검증한다.
->> - [ ] 성능 테스트
->>   - [ ] JMeter로 동시 요청 시뮬레이션
->>   - [ ] 초당 요청 처리량(TPS) 측정
->>   - [ ] 평균 응답 시간 측정
->>   - [ ] 실패율 측정
->>   - [ ] 락 방식별 성능 비교
->> - [ ] 모니터링
->>   - [ ] Thread Dump 분석 (jstack)
->>   - [ ] CPU/Memory 사용량 모니터링 (JVisualVM, JConsole)
->>   - [ ] 락 경합 (Lock Contention) 상태 확인
-
+> #### 8. 로직 검증 테스트
+> - 목표 : 로직이 정상적으로 작동되는지 테스트한다.
+>>   - [ ] 과목 1개 1,3학년 동시 테스트
+>>     - [x] 자바 레벨 락
+>>       - [x] Synchronized
+>>       - [x] ReentrantLock
+>>     - [x] DB 레벨 락
+>>       - [x] Pessimistic Lock
+>>       - [x] Optimistic Lock
+>>     - [ ] Striping
+>>       - [x] Lock Striping
+>>       - [x] Guava
+>>       - [ ] Redisson (multiLock)
+>>     - [ ] 분산 락
+>>       - [ ] Redis
+>>       - [ ] Zookeeper
+>>   - [ ] 과목 1개 모든 학년 동시 테스트
+>>     - [x] 자바 레벨 락
+>>       - [x] Synchronized
+>>       - [x] ReentrantLock
+>>     - [x] DB 레벨 락
+>>       - [x] Pessimistic Lock
+>>       - [x] Optimistic Lock
+>>     - [ ] Striping
+>>       - [x] Lock Striping
+>>       - [x] Guava
+>>       - [ ] Redisson (multiLock)
+>>     - [ ] 분산 락
+>>       - [ ] Redis
+>>       - [ ] Zookeeper
+>>   - [ ] 과목 3개 1,3 학년 동시 테스트
+>>     - [x] 자바 레벨 락
+>>       - [x] Synchronized
+>>       - [x] ReentrantLock
+>>     - [x] DB 레벨 락
+>>       - [x] Pessimistic Lock
+>>       - [x] Optimistic Lock
+>>     - [ ] Striping
+>>       - [x] Lock Striping
+>>       - [x] Guava
+>>       - [ ] Redisson (multiLock)
+>>     - [ ] 분산 락
+>>       - [ ] Redis
+>>       - [ ] Zookeeper
+>>   - [ ] 과목 3개 모든 학년 동시 테스트
+>>     - [x] 자바 레벨 락
+>>       - [x] Synchronized
+>>       - [x] ReentrantLock
+>>     - [x] DB 레벨 락
+>>       - [x] Pessimistic Lock
+>>       - [x] Optimistic Lock
+>>     - [ ] Striping
+>>       - [x] Lock Striping
+>>       - [x] Guava
+>>       - [ ] Redisson (multiLock)
+>>     - [ ] 분산 락
+>>       - [ ] Redis
+>>       - [ ] Zookeeper
+>
+> #### 9. 성능 테스트
+> 목표 : JMeter를 사용하여 동시 요청 상황에서 시스템의 성능을 비교한다.
+>> - [x] 자바 레벨 락
+>>   - [x] Synchronized
+>>   - [x] ReentrantLock
+>> - [x] DB 레벨 락
+>>   - [x] Pessimistic Lock
+>>   - [x] Optimistic Lock
+>> - [ ] Striping
+>>   - [x] Lock Striping
+>>   - [x] Guava
+>>   - [ ] Redisson (multiLock)
+>> - [ ] 분산 락
+>>   - [ ] Redis
+>>   - [ ] Zookeeper
 ---
 ### 커밋 메시지 컨벤션 정리
 > | 타입    | 설명 |
