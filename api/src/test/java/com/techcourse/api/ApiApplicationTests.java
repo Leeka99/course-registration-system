@@ -68,4 +68,32 @@ class ApiApplicationTests {
             courseRepository.save(new Course("대학생활 시작하기" + i, 50));
         }
     }
+
+    @Test
+    @DisplayName("1000명식 총 4000명 생성, 정원 30명 수강과목 100개 생성")
+    void 과목_100개_모든학년_학생_테스트케이스_생성() {
+        for (int i = 1; i <= 4000; i += 4) {
+            studentRepository.save(new Student("학생" + i, 1));
+            studentRepository.save(new Student("학생" + (i + 1), 2));
+            studentRepository.save(new Student("학생" + (i + 2), 3));
+            studentRepository.save(new Student("학생" + (i + 3), 4));
+        }
+        for (int i = 1; i <= 100; i++) {
+            courseRepository.save(new Course("대학생활 시작하기" + i, 30));
+        }
+    }
+
+    @Test
+    @DisplayName("15000명식 총 60000명 생성, 정원 30명 수강과목 1500개 생성")
+    void 과목_1500개_모든학년_학생_테스트케이스_생성() {
+        for (int i = 1; i <= 60000; i += 4) {
+            studentRepository.save(new Student("학생" + i, 1));
+            studentRepository.save(new Student("학생" + (i + 1), 2));
+            studentRepository.save(new Student("학생" + (i + 2), 3));
+            studentRepository.save(new Student("학생" + (i + 3), 4));
+        }
+        for (int i = 1; i <= 1500; i++) {
+            courseRepository.save(new Course("대학생활 시작하기" + i, 30));
+        }
+    }
 }
