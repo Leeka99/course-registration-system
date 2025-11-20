@@ -23,7 +23,6 @@ public class ApplyServiceSynchronized implements ApplyService {
         Student student = studentRepository.findById(studentId).orElseThrow();
         Course course = courseRepository.findById(courseId).orElseThrow();
 
-        // 수강 가능 인원이 남아있다면
         if (course.isAvailable()) {
             course.increaseCapacity();
             courseRepository.save(course);
@@ -31,7 +30,6 @@ public class ApplyServiceSynchronized implements ApplyService {
             return;
         }
         if (!course.isAvailable()) {
-            // 가득 찼다면 대기순번으로
             registrationRepository.save(Registration.changeToWait(student, course));
         }
     }

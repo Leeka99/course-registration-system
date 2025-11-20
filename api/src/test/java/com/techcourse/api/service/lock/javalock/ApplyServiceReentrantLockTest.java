@@ -6,7 +6,6 @@ import com.techcourse.api.domain.entity.Student;
 import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
-import com.techcourse.api.service.lock.javalock.ApplyServiceReentrantLock;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -46,6 +45,7 @@ class ApplyServiceReentrantLockTest {
         }
         courseRepository.save(new Course("대학생활 시작하기", 100));
     }
+
     @DisplayName("1학년 100명, 3학년 100명이 동시에 신청하는 경우 1학년 90% 이외학년 10% 비율로 정상적으로 저장되는지 테스트한다. - ReentrantLock")
     @Test
     void 동시에_신청하는_경우_ReentrantLock_적용() throws InterruptedException {

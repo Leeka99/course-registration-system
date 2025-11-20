@@ -20,7 +20,6 @@ public class RegistrationGuavaService implements RegistrationService {
 
     private final RegistrationRepositoryService registrationRepositoryService;
 
-    // 과목별 락, 조건, 카운트를 묶기
     private static class CourseCountBundle {
 
         int firstYearCount = 0;

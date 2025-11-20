@@ -6,7 +6,6 @@ import com.techcourse.api.domain.entity.Student;
 import com.techcourse.api.repository.CourseRepository;
 import com.techcourse.api.repository.RegistrationRepository;
 import com.techcourse.api.repository.StudentRepository;
-import com.techcourse.api.service.lock.javalock.ApplyServiceSynchronized;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
