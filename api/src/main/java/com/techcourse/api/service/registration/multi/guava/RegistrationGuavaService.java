@@ -20,20 +20,20 @@ public class RegistrationGuavaService implements RegistrationService {
 
     private final RegistrationRepositoryService registrationRepositoryService;
 
-    private static class CourseCountBundle {
+    private static class CourseLockBundle {
 
         int firstYearCount = 0;
         int otherYearCount = 0;
         final Condition firstYearCondition;
         final Condition otherYearCondition;
 
-        CourseCountBundle(Lock lock) {
+        CourseLockBundle(Lock lock) {
             this.firstYearCondition = lock.newCondition();
             this.otherYearCondition = lock.newCondition();
         }
     }
 
-    private final ConcurrentHashMap<Long, CourseCountBundle> bundles = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, CourseLockBundle> bundles = new ConcurrentHashMap<>();
 
     private final Striped<Lock> stripedLock = Striped.lock(50);
 
@@ -45,8 +45,8 @@ public class RegistrationGuavaService implements RegistrationService {
         lock.lock();
 
         try {
-            CourseCountBundle bundle = bundles.computeIfAbsent(course.getId(),
-                id -> new CourseCountBundle(lock));
+            CourseLockBundle bundle = bundles.computeIfAbsent(course.getId(),
+                id -> new CourseLockBundle(lock));
 
             int grade = student.getGrade();
             if (grade == 1) {
@@ -60,7 +60,7 @@ public class RegistrationGuavaService implements RegistrationService {
         }
     }
 
-    private void otherGrade(Student student, Course course, CourseCountBundle bundle,
+    private void otherGrade(Student student, Course course, CourseLockBundle bundle,
         int otherYearLimit) {
         long nanos = TimeUnit.SECONDS.toNanos(3);
         try {
@@ -83,7 +83,7 @@ public class RegistrationGuavaService implements RegistrationService {
     }
 
     private void firstGrade(Student student, Course course,
-        CourseCountBundle bundle,
+        CourseLockBundle bundle,
         int firstYearLimit) {
         long nanos = TimeUnit.SECONDS.toNanos(3);
         try {

@@ -19,7 +19,6 @@ public class RegistrationStripingService implements RegistrationService {
 
     private final RegistrationRepositoryService registrationRepositoryService;
 
-    // 과목별 락, 조건, 카운트를 묶기
     private static class CourseLockBundle {
 
         final ReentrantLock lock = new ReentrantLock();
