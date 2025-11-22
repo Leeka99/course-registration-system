@@ -1,8 +1,8 @@
 # 🔎오픈 미션
 
 ### 📝 회고 및 관련 내용 문서화
-> - [학습내용 및 실습과정 보러가기](https://leeka-blog.tistory.com/category/%EB%8F%99%EC%8B%9C%EC%84%B1%20%EB%AC%B8%EC%A0%9C%20%ED%95%99%EC%8A%B5)
 > - [오픈 미션 회고 글 보러가기](https://leeka-blog.tistory.com/category/%EC%9A%B0%ED%85%8C%EC%BD%94%208%EA%B8%B0%20%ED%94%84%EB%A6%AC%EC%BD%94%EC%8A%A4)
+> - [학습내용 및 실습과정 보러가기](https://leeka-blog.tistory.com/category/%EB%8F%99%EC%8B%9C%EC%84%B1%20%EB%AC%B8%EC%A0%9C%20%ED%95%99%EC%8A%B5)
 
 ---
 ### 📢 오픈 미션 소개
